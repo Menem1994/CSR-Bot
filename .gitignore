@@ -1,0 +1,15 @@
+# Arduino / PlatformIO build outputs
+build/
+.cache/
+*.elf
+*.hex
+*.bin
+*.map
+*.o
+*.d
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
