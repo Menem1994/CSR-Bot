@@ -1,0 +1,7 @@
+{
+  "esp32_ip": "192.168.1.123",
+  "device_token": "REEMPLAZAR_POR_EL_MISMO_TOKEN_DEL_ESP32",
+  "ai_enabled": false,
+  "openai_model": "gpt-4.1-mini",
+  "windows_speech": false
+}

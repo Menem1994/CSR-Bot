@@ -1,5 +1,6 @@
 #include "config.h"
 #include <esp_system.h>
+#include "network.h"
 
 // -----------------------------------------------------------------------------
 // Coordinador del firmware: inicialización, comandos serie y ciclo principal.
@@ -68,7 +69,7 @@ void setup() {
 
   Serial.println();
   Serial.println("==================================");
-  Serial.println(" CSR-BOT FACE ENGINE v1.4 MODULAR");
+  Serial.println(" CSR-BOT FACE ENGINE v1.6 DIALOGO");
   Serial.println(" ESP32 + TFT 3.5 inch");
   Serial.println("==================================");
   Serial.println("100 estados cargados.");
@@ -77,10 +78,14 @@ void setup() {
 
   drawAvatar(0);
   redrawRequested = false;
+
+  // Conexión opcional Wi-Fi; no modifica el cableado ni los pines TFT.
+  initializeNetwork();
 }
 
 void loop() {
   handleSerial();
+  updateNetwork();
 
   unsigned long now=millis();
 
@@ -96,9 +101,9 @@ void loop() {
   }
 
   // MODO DOBLE BUFFER: cada fotograma se compone en RAM antes de mostrarse.
-  // Redibuja cuando cambia un estado, se abre/cierra un parpadeo o se simula habla.
+  // Redibuja cuando cambia un estado, se abre/cierra un parpadeo o hay voz activa.
   // El doble buffer evita mostrar el borrado y el dibujo progresivo del fotograma.
-  bool talkFrame = frameReady && speaking && (now-lastFrame >= 280);
+  bool talkFrame = frameReady && speaking && (now-lastFrame >= 110);
   if ((redrawRequested || talkFrame) && now-lastFrame >= 50) {
     lastFrame=now;
     redrawRequested=false;

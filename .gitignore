@@ -13,3 +13,19 @@ build/
 .idea/
 .DS_Store
 Thumbs.db
+
+
+# CSR-BOT - Credenciales privadas
+**/wifi_config.h
+software/brain/settings.json
+
+# Variables de entorno y claves
+.env
+.env.*
+
+# Archivos temporales de Python
+__pycache__/
+*.py[cod]
+
+# Archivos temporales
+*.log

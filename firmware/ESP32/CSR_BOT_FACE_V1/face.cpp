@@ -158,7 +158,7 @@ void drawMouth(float timeSec) {
   float mouthX=0, mouthY=83;
   float pulse=fabsf(sinf(timeSec * (stateIn("EXCITED ANGRY ALERT") ? 4.0f : 2.0f)));
 
-  if (speaking || currentState == 41 || p.mouth == M_TALK) {
+  if (speaking) {
     float openAmount=5+fabsf(sinf(timeSec*11.5f))*22+fabsf(sinf(timeSec*4.1f))*5;
     float width=48+fabsf(sinf(timeSec*5))*18;
     gfx->fillEllipse(X(mouthX),Y(mouthY),R(width/2),max(2,R(openAmount/2)),MOUTH_DK);
@@ -203,6 +203,7 @@ void drawMouth(float timeSec) {
       const float ys[]={2,-2,4,-2,2};
       relativePolyline(xs,ys,5,PINK,3,mouthY); break;
     }
+    case M_TALK:
     default: {
       float width=20+pulse*5;
       thickLine(X(-width),Y(mouthY),X(width),Y(mouthY-1),PINK,2); break;

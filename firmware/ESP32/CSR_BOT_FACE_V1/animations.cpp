@@ -1,4 +1,5 @@
 #include "config.h"
+#include "network.h"
 
 // -----------------------------------------------------------------------------
 // Elementos animados independientes del rostro: arco de auriculares,
@@ -6,40 +7,64 @@
 // -----------------------------------------------------------------------------
 
 void drawStateBubble(float timeSec) {
-  uint16_t accent=stateAccent();
-  float bob=sinf(timeSec*2.2f)*2.0f;
-  int y=Y(-252+bob);
-  int x1=X(-164), x2=X(164);
-  int halfH=R(27);
+  if (!isBubbleVisible()) return;
 
-  gfx->fillRect(x1+R(4),y-halfH+R(4),x2-x1,halfH*2,0x0042);
-  gfx->fillRect(x1,y-halfH,x2-x1,halfH*2,0x1906);
-  gfx->drawRect(x1,y-halfH,x2-x1,halfH*2,accent);
-  gfx->fillTriangle(X(-10),y+halfH-1,X(10),y+halfH-1,X(0),y+halfH+R(12),0x1906);
-  gfx->drawLine(X(-10),y+halfH-1,X(0),y+halfH+R(12),accent);
-  gfx->drawLine(X(10),y+halfH-1,X(0),y+halfH+R(12),accent);
+  uint16_t accent = stateAccent();
+  float bob = sinf(timeSec * 2.2f) * 1.5f;
+  int y = Y(-252 + bob);
+  int x1 = X(-164), x2 = X(164);
+  int halfH = R(27);
+
+  // Burbuja de dos líneas: el avatar sigue ocupando el resto de la pantalla.
+  gfx->fillRect(x1 + R(4), y - halfH + R(3), x2 - x1, halfH * 2, 0x0042);
+  gfx->fillRoundRect(x1, y - halfH, x2 - x1, halfH * 2, R(5), 0x1906);
+  gfx->drawRoundRect(x1, y - halfH, x2 - x1, halfH * 2, R(5), accent);
+
+  gfx->fillTriangle(X(-10), y + halfH - 1,
+                    X(10), y + halfH - 1,
+                    X(0), y + halfH + R(10), 0x1906);
+  gfx->drawLine(X(-10), y + halfH - 1, X(0), y + halfH + R(10), accent);
+  gfx->drawLine(X(10), y + halfH - 1, X(0), y + halfH + R(10), accent);
 
   gfx->setTextFont(1);
   gfx->setTextSize(1);
-  gfx->setTextColor(accent,0x1906);
-  gfx->setCursor(x1+R(12),y-4);
+  gfx->setTextColor(accent, 0x1906);
+  gfx->setCursor(x1 + R(9), y - R(4));
   gfx->print(badgeSymbol());
 
-  gfx->setTextColor(TEXT,0x1906);
-  gfx->setCursor(x1+R(66),y-4);
-  // El globo usa la microfrase de Python v4; la pantalla muestra el inicio
-  // si la frase supera el ancho disponible.
-  char shortPhrase[25];
-  strncpy(shortPhrase,STATE_PHRASES[currentState],sizeof(shortPhrase)-1);
-  shortPhrase[sizeof(shortPhrase)-1]='\0';
-  if (strlen(STATE_PHRASES[currentState]) >= sizeof(shortPhrase)) {
-    shortPhrase[21]='.'; shortPhrase[22]='.'; shortPhrase[23]='.'; shortPhrase[24]='\0';
-  }
-  gfx->print(shortPhrase);
+  const char* line1 = getBubbleLine1();
+  const char* line2 = getBubbleLine2();
+  if (!line1 || !line1[0]) line1 = STATE_PHRASES[currentState];
 
-  float pulse=0.55f+0.45f*fabsf(sinf(timeSec*3));
-  gfx->drawLine(x1+R(12),y+halfH-R(3),
-               x1+R(12)+R(32*pulse),y+halfH-R(3),accent);
+  gfx->setTextColor(TEXT, 0x1906);
+
+int textX = x1 + R(38);
+
+// Primera línea
+gfx->setCursor(textX, y - R(12));
+gfx->print(line1);
+
+// Segunda línea, con mayor separación
+if (line2 && line2[0]) {
+    gfx->setCursor(textX, y + R(5));
+    gfx->print(line2);
+}
+
+  // Indicador de avance de páginas, sin tapar el texto.
+  int pages = getBubblePageCount();
+  if (pages > 1) {
+    int trackX = x1 + R(10);
+    int trackY = y + halfH - R(3);
+    int trackW = x2 - x1 - R(20);
+    gfx->drawFastHLine(trackX, trackY, trackW, 0x52CE);
+    int progressW = (trackW * (getBubblePageIndex() + 1)) / pages;
+    if (progressW < 2) progressW = 2;
+    gfx->drawFastHLine(trackX, trackY, progressW, accent);
+  } else {
+    float pulse = 0.55f + 0.45f * fabsf(sinf(timeSec * 3));
+    gfx->drawFastHLine(x1 + R(10), y + halfH - R(3),
+                       R(32 * pulse), accent);
+  }
 }
 
 void drawStateEffect(float timeSec) {

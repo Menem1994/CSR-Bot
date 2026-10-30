@@ -1,0 +1,6 @@
+#pragma once
+// COPIAR ESTE ARCHIVO COMO wifi_config.h Y EDITAR LOS 3 DATOS.
+// wifi_config.h NO se debe subir a GitHub.
+#define CSR_WIFI_SSID "NOMBRE_DE_TU_WIFI"
+#define CSR_WIFI_PASSWORD "CONTRASENA_DE_TU_WIFI"
+#define CSR_DEVICE_TOKEN "CAMBIA_ESTE_TOKEN_POR_UNO_LARGO_12345"
